@@ -85,6 +85,11 @@ class _RandomWordsState extends State<RandomWords> {
       final SharedPreferences prefs = await _prefs;
       if (!prefs.containsKey("recipes")) throw e;
       data = prefs.getString("recipes");
+    } on DioError catch (e) {
+      if (e.response != null) throw e;
+      final SharedPreferences prefs = await _prefs;
+      if (!prefs.containsKey("recipes")) throw e;
+      data = prefs.getString("recipes");
     }
     final jsonResponse = jsonDecode(data) as List;
     return jsonResponse.map((recipe) => new Recipe.fromJson(recipe)).toList();
