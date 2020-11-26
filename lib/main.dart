@@ -105,6 +105,7 @@ class _RandomWordsState extends State<RandomWords> {
   }
 
   Widget _buildSuggestions(List<Recipe> recipes) {
+    recipes.sort((recipe1, recipe2) => recipe1.name.compareTo(recipe2.name));
     return Scrollbar(
         child: ListView.separated(
             physics: BouncingScrollPhysics(),
