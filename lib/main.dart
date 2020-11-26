@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:convert';
 
 void main() {
@@ -70,10 +70,10 @@ class _RandomWordsState extends State<RandomWords> {
 
   Future<List<Recipe>> _fetchRecipes() async {
     final recipeListApiUrl = "http://192.168.178.27:5556/getRecipes.php";
-    final response = await http.get(recipeListApiUrl);
+    final response = await Dio().get(recipeListApiUrl);
 
     if (response.statusCode == 200) {
-      final List jsonResponse = jsonDecode(response.body) as List;
+      final jsonResponse = response.data as List;
       return jsonResponse.map((recipe) => new Recipe.fromJson(recipe)).toList();
     } else {
       throw Exception('Failed to load recipes');
