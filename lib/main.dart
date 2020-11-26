@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 void main() {
@@ -70,14 +73,21 @@ class _RandomWordsState extends State<RandomWords> {
 
   Future<List<Recipe>> _fetchRecipes() async {
     final recipeListApiUrl = "http://192.168.178.27:5556/getRecipes.php";
-    final response = await Dio().get(recipeListApiUrl);
-
-    if (response.statusCode == 200) {
-      final jsonResponse = response.data as List;
-      return jsonResponse.map((recipe) => new Recipe.fromJson(recipe)).toList();
-    } else {
-      throw Exception('Failed to load recipes');
+    var dio = Dio();
+    String data;
+    try {
+      final response =
+          await dio.get<String>(recipeListApiUrl).timeout(Duration(seconds: 5));
+      data = response.data;
+      final SharedPreferences prefs = await _prefs;
+      prefs.setString("recipes", data);
+    } on TimeoutException catch (e) {
+      final SharedPreferences prefs = await _prefs;
+      if (!prefs.containsKey("recipes")) throw e;
+      data = prefs.getString("recipes");
     }
+    final jsonResponse = jsonDecode(data) as List;
+    return jsonResponse.map((recipe) => new Recipe.fromJson(recipe)).toList();
   }
 
   @override
@@ -97,12 +107,9 @@ class _RandomWordsState extends State<RandomWords> {
             }
           },
         ));
-    // return Scaffold(
-    //     appBar: AppBar(
-    //       title: Text("Rezepte"),
-    //     ),
-    //     body: _buildSuggestions());
   }
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
   Widget _buildSuggestions(List<Recipe> recipes) {
     recipes.sort((recipe1, recipe2) => recipe1.name.compareTo(recipe2.name));
