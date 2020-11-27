@@ -4,10 +4,12 @@
 
 import 'dart:async';
 
+import 'package:dio/adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:io';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -72,8 +74,14 @@ class _RandomWordsState extends State<RandomWords> {
   final _biggerFont = TextStyle(fontSize: 18);
 
   Future<List<Recipe>> _fetchRecipes() async {
-    final recipeListApiUrl = "http://192.168.178.27:5556/getRecipes.php";
+    final recipeListApiUrl = "https://192.168.178.27:5556/getRecipes.php";
     var dio = Dio();
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      return client;
+    };
     String data;
     try {
       final response =
