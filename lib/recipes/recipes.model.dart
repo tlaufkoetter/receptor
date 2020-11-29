@@ -21,14 +21,16 @@ class CookBook {
 class Recipe {
   final int id;
   final String name;
-  final Season season;
+  final List<String> tags;
   final CookBook cookBook;
-  Recipe({this.id, this.name, this.season, this.cookBook});
+  Recipe({this.id, this.name, this.tags, this.cookBook});
   factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
         id: json['id'],
         name: json['name'],
-        season: json['season'] != null ? Season.fromJson(json['season']) : null,
+        tags: json['season'] != null
+            ? [Season.fromJson(json['season']).name]
+            : [],
         cookBook: json['cook_book'] != null
             ? CookBook.fromJson(json['cook_book'])
             : null);

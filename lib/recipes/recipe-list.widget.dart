@@ -9,35 +9,98 @@ class RecipesList extends StatefulWidget {
   _RecipesListState createState() => _RecipesListState();
 }
 
+class Search extends SearchDelegate {
+  List<Recipe> _recipes;
+  Recipe selectedResult;
+  Search(this._recipes);
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return <Widget>[
+      IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            query = "";
+          }),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context);
+        });
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container(child: Center(child: Text(selectedResult.name)));
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<Recipe> suggestions = [];
+    if (query.isNotEmpty) {
+      suggestions.addAll(_recipes.where((element) =>
+          element.name.toLowerCase().contains(query.toLowerCase()) ||
+          element.tags
+              .any((t) => t.toLowerCase().contains(query.toLowerCase()))));
+    }
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        return RecipeItem(suggestions[index]);
+      },
+    );
+  }
+}
+
 class _RecipesListState extends State<RecipesList> {
+  List<Recipe> _recipes;
+
+  @override
+  void initState() {
+    super.initState();
+    RecipesRepository()
+        .allRecipes()
+        .then((rs) => setState(() => _recipes = rs));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Rezepte")),
-        body: FutureBuilder<List<Recipe>>(
-          future: RecipesRepository().allRecipes(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              List<Recipe> data = snapshot.data;
-              return _buildRecipesList(data);
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            } else {
-              return CircularProgressIndicator();
-            }
-          },
-        ));
+      appBar: AppBar(
+        title: Text("Rezepte"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: Search(_recipes));
+            },
+          )
+        ],
+      ),
+      body: RefreshIndicator(
+        child: _buildRecipesList(),
+        onRefresh: () async {
+          var recipes = await RecipesRepository().allRecipes();
+          setState(() => _recipes = recipes);
+        },
+      ),
+    );
   }
 
-  Widget _buildRecipesList(List<Recipe> recipes) {
-    recipes.sort((recipe1, recipe2) => recipe1.name.compareTo(recipe2.name));
+  Widget _buildRecipesList() {
+    if (_recipes == null) return LinearProgressIndicator();
+    _recipes.sort((recipe1, recipe2) => recipe1.name.compareTo(recipe2.name));
     return Scrollbar(
         child: ListView.separated(
             physics: BouncingScrollPhysics(),
-            itemCount: recipes.length,
+            itemCount: _recipes.length,
             separatorBuilder: (BuildContext context, int i) => Divider(),
             itemBuilder: (context, i) {
-              return RecipeItem(recipes[i]);
+              return RecipeItem(_recipes[i]);
             }));
   }
 }

@@ -7,16 +7,9 @@ class RecipeItem extends StatelessWidget {
   RecipeItem(this._recipe);
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     String subtitle = "";
-    final hasSeason = _recipe.season != null;
-    if (hasSeason) {
-      subtitle += _recipe.season.name;
-    }
-
     if (_recipe.cookBook != null) {
-      if (hasSeason) {
-        subtitle += " - ";
-      }
       subtitle += _recipe.cookBook.name;
       if (_recipe.cookBook.pageNumber != null) {
         subtitle += " (S. ${_recipe.cookBook.pageNumber})";
@@ -25,8 +18,9 @@ class RecipeItem extends StatelessWidget {
     return ListTile(
       title: Text(
         _recipe.name,
+        style: theme.textTheme.headline6,
       ),
-      subtitle: Text(subtitle),
+      subtitle: subtitle.isEmpty ? null : Text(subtitle),
       dense: true,
       onTap: () {
         Navigator.push(context,
