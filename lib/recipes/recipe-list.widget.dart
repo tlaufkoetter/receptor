@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:receptor/recipes/recipe-item.widget.dart';
 
-import './recipes.model.dart';
-import './recipes.repository.dart';
+import 'recipes.model.dart';
+import 'recipes.repository.dart';
 
 class RecipesList extends StatefulWidget {
   @override
@@ -9,8 +10,6 @@ class RecipesList extends StatefulWidget {
 }
 
 class _RecipesListState extends State<RecipesList> {
-  final _biggerFont = TextStyle(fontSize: 18);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,34 +35,9 @@ class _RecipesListState extends State<RecipesList> {
         child: ListView.separated(
             physics: BouncingScrollPhysics(),
             itemCount: recipes.length,
-            separatorBuilder: (BuildContext context, int i) => Divider(
-                  height: 2,
-                  color: Colors.blue,
-                ),
+            separatorBuilder: (BuildContext context, int i) => Divider(),
             itemBuilder: (context, i) {
-              return _buildRow(recipes[i]);
+              return RecipeItem(recipes[i]);
             }));
-  }
-
-  Widget _buildRow(Recipe recipe) {
-    String subtitle = "";
-    final hasSeason = recipe.season != null;
-    if (hasSeason) {
-      subtitle += recipe.season.name;
-    }
-
-    if (recipe.cookBook != null) {
-      if (hasSeason) {
-        subtitle += " - ";
-      }
-      subtitle += recipe.cookBook.name;
-      if (recipe.cookBook.pageNumber != null) {
-        subtitle += " (S. ${recipe.cookBook.pageNumber})";
-      }
-    }
-    return ListTile(
-        title: Text(recipe.name, style: _biggerFont),
-        subtitle: Text(subtitle),
-        dense: true);
   }
 }

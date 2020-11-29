@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './recipes/recipes.widget.dart';
+import 'recipes/recipe-list.widget.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
