@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:receptor/recipes/recipe-setter.widget.dart';
 import 'package:receptor/recipes/recipes.model.dart';
 
 class RecipesDetail extends StatefulWidget {
@@ -10,7 +11,7 @@ class RecipesDetail extends StatefulWidget {
 }
 
 class _RecipesDetailState extends State<RecipesDetail> {
-  final Recipe _recipe;
+  Recipe _recipe;
   _RecipesDetailState(this._recipe);
 
   @override
@@ -27,7 +28,9 @@ class _RecipesDetailState extends State<RecipesDetail> {
           .add(Text("keine Tags vorhanden", style: theme.textTheme.subtitle1));
     } else {
       var tags = _recipe.tags
-          .map((t) => FilterChip(label: Text(t), onSelected: (bool value) {}))
+          .map((t) => Padding(
+              padding: EdgeInsets.only(right: 5),
+              child: InputChip(label: Text(t), onSelected: (bool value) {})))
           .toList();
       children.add(Wrap(children: tags));
     }
@@ -49,7 +52,22 @@ class _RecipesDetailState extends State<RecipesDetail> {
       ));
     }
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          FlatButton(
+            child: Text("Bearbeiten"),
+            onPressed: () async {
+              var result = await Navigator.of(context).push(PageRouteBuilder(
+                  transitionDuration: Duration.zero,
+                  pageBuilder: (_, __, ___) =>
+                      RecipeSetter(_recipe, key: ObjectKey(this))));
+              if (result is Recipe) {
+                setState(() => _recipe = result);
+              }
+            },
+          )
+        ],
+      ),
       body: Container(
         child: ListView(
           children: children,

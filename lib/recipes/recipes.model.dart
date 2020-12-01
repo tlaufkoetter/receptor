@@ -20,8 +20,8 @@ class CookBook {
 
 class Recipe {
   final int id;
-  final String name;
-  final List<String> tags;
+  String name;
+  List<String> tags;
   final CookBook cookBook;
   Recipe({this.id, this.name, this.tags, this.cookBook});
   factory Recipe.fromJson(Map<String, dynamic> json) {
