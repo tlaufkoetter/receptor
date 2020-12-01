@@ -12,7 +12,7 @@ class RecipesList extends StatefulWidget {
 class Search extends SearchDelegate {
   List<Recipe> _recipes;
   Recipe selectedResult;
-  Search(this._recipes);
+  Search(this._recipes) : super(searchFieldLabel: "Suchen");
   @override
   List<Widget> buildActions(BuildContext context) {
     return <Widget>[
