@@ -56,8 +56,8 @@ class RecipesRepository {
     final recipeJson = _toJson(recipe);
     final response =
         await BackendService().post(recipeJson, "api/updateRecipe.php");
-    await allRecipes(true);
     await getAllTags(true);
+    await allRecipes(true);
     return Recipe.fromJson(jsonDecode(response.data));
   }
 

@@ -75,40 +75,35 @@ class _RecipeSetterState extends State<RecipeSetter> {
         );
       },
     ));
+    final actions = <Widget>[];
     if (widget._recipe.id != null) {
-      children.add(Padding(
-          padding: EdgeInsets.only(top: 100),
-          child: MaterialButton(
-            child: Text("Rezept Löschen"),
-            color: Colors.red,
-            onPressed: () async {
-              await RecipesRepository().deleteRecipe(widget._recipe);
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-          )));
+      actions.add(MaterialButton(
+        textColor: Colors.red,
+        child: Icon(Icons.delete),
+        onPressed: () async {
+          await RecipesRepository().deleteRecipe(widget._recipe);
+          Navigator.of(context).popUntil(ModalRoute.withName('/'));
+        },
+      ));
     }
+
     return Scaffold(
-        appBar: AppBar(
-          leadingWidth: 150,
-          leading: FlatButton(
-            child: Text("Abbrechen"),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          actions: [
-            FlatButton(
-              child: Text("Fertig"),
-              onPressed: () async {
-                if (!_formKey.currentState.validate()) return;
-                widget._recipe.tags = _newTags;
-                widget._recipe.name = _nameController.text;
-                Navigator.of(context).pop(
-                    await RecipesRepository().updateRecipe(widget._recipe));
-              },
-            )
-          ],
-        ),
-        body: Container(
-            child: ListView(children: children),
-            padding: EdgeInsets.only(left: 20, right: 20)));
+      appBar: AppBar(
+        actions: actions,
+      ),
+      body: Container(
+          child: ListView(children: children),
+          padding: EdgeInsets.only(left: 20, right: 20)),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.check),
+        onPressed: () async {
+          if (!_formKey.currentState.validate()) return;
+          widget._recipe.tags = _newTags;
+          widget._recipe.name = _nameController.text;
+          Navigator.of(context)
+              .pop(await RecipesRepository().updateRecipe(widget._recipe));
+        },
+      ),
+    );
   }
 }
