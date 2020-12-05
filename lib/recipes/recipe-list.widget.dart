@@ -63,7 +63,7 @@ class _RecipesListState extends State<RecipesList> {
   void initState() {
     super.initState();
     RecipesRepository()
-        .allRecipes()
+        .allRecipes(false)
         .then((rs) => setState(() => _recipes = rs));
   }
 
@@ -84,7 +84,7 @@ class _RecipesListState extends State<RecipesList> {
       body: RefreshIndicator(
         child: _buildRecipesList(),
         onRefresh: () async {
-          var recipes = await RecipesRepository().allRecipes();
+          var recipes = await RecipesRepository().allRecipes(true);
           setState(() => _recipes = recipes);
         },
       ),

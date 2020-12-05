@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:receptor/recipes/recipes.model.dart';
+import 'package:receptor/recipes/recipes.repository.dart';
 
 class RecipeSetter extends StatefulWidget {
   final Recipe _recipe;
@@ -29,9 +30,8 @@ class _RecipeSetterState extends State<RecipeSetter> {
     children.add(Center(
         child: Padding(
             padding: EdgeInsets.only(top: 15, bottom: 15),
-            child: TextFormField(
-                style: theme.textTheme.headline5,
-                controller: _nameController))));
+            child:
+                Text(widget._recipe.name, style: theme.textTheme.headline5))));
     children.add(Text("Tags", style: theme.textTheme.headline6));
 
     children.add(ChipsInput(
@@ -70,10 +70,10 @@ class _RecipeSetterState extends State<RecipeSetter> {
           actions: [
             FlatButton(
               child: Text("Fertig"),
-              onPressed: () {
-                widget._recipe.name = _nameController.text;
+              onPressed: () async {
                 widget._recipe.tags = _newTags;
-                Navigator.of(context).pop(widget._recipe);
+                Navigator.of(context).pop(
+                    await RecipesRepository().updateRecipe(widget._recipe));
               },
             )
           ],

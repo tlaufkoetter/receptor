@@ -25,14 +25,24 @@ class Recipe {
   final CookBook cookBook;
   Recipe({this.id, this.name, this.tags, this.cookBook});
   factory Recipe.fromJson(Map<String, dynamic> json) {
+    List<String> seasons = [];
+    if (json['seasons'] != null) {
+      for (final season in json['seasons']) {
+        var frseason = Season.fromJson(season);
+        seasons.add(frseason.name);
+      }
+    }
+    List<CookBook> cookBooks = [];
+    if (json['cook_books'] != null) {
+      for (final cook_book in json['cook_books']) {
+        var frcookbook = CookBook.fromJson(cook_book);
+        cookBooks.add(frcookbook);
+      }
+    }
     return Recipe(
         id: json['id'],
         name: json['name'],
-        tags: json['season'] != null
-            ? [Season.fromJson(json['season']).name]
-            : [],
-        cookBook: json['cook_book'] != null
-            ? CookBook.fromJson(json['cook_book'])
-            : null);
+        tags: seasons,
+        cookBook: cookBooks.isNotEmpty ? cookBooks.first : null);
   }
 }

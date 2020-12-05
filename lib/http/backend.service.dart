@@ -36,4 +36,16 @@ class BackendService {
       throw ServerUnreachableError(e);
     }
   }
+
+  Future<Response<String>> post(dynamic data, String endpoint) async {
+    try {
+      final response = await _getDio().post<String>(endpoint, data: data);
+      return response;
+    } on DioError catch (e) {
+      if (e.response != null) {
+        throw e;
+      }
+      throw ServerUnreachableError(e);
+    }
+  }
 }
