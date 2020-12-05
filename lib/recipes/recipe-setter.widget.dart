@@ -82,6 +82,9 @@ class _RecipeSetterState extends State<RecipeSetter> {
         child: Icon(Icons.delete),
         onPressed: () async {
           await RecipesRepository().deleteRecipe(widget._recipe);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(
+                  "Rezept gelöscht! Bitte die Rezeptliste aktualisieren.")));
           Navigator.of(context).popUntil(ModalRoute.withName('/'));
         },
       ));
@@ -100,8 +103,13 @@ class _RecipeSetterState extends State<RecipeSetter> {
           if (!_formKey.currentState.validate()) return;
           widget._recipe.tags = _newTags;
           widget._recipe.name = _nameController.text;
-          Navigator.of(context)
-              .pop(await RecipesRepository().updateRecipe(widget._recipe));
+          final result = await RecipesRepository().updateRecipe(widget._recipe);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Rezept " +
+                  (widget._recipe.id == null
+                      ? "erstellt!"
+                      : "aktualisiert!"))));
+          Navigator.of(context).pop(result);
         },
       ),
     );
