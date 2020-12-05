@@ -35,8 +35,8 @@ class RecipesRepository {
     return jsonResponse.map((recipe) => Recipe.fromJson(recipe)).toList();
   }
 
-  Future<Recipe> updateRecipe(Recipe recipe) async {
-    var recipeJson = {
+  Map<String, dynamic> _toJson(Recipe recipe) {
+    return {
       "id": recipe.id,
       "name": recipe.name,
       "seasons": recipe.tags.map((tag) => {"name": tag, "id": null}).toList(),
@@ -50,6 +50,10 @@ class RecipesRepository {
             ]
           : []
     };
+  }
+
+  Future<Recipe> updateRecipe(Recipe recipe) async {
+    final recipeJson = _toJson(recipe);
     final response =
         await BackendService().post(recipeJson, "api/updateRecipe.php");
     await allRecipes(true);
@@ -80,5 +84,10 @@ class RecipesRepository {
     }
     final jsonResponse = jsonDecode(data) as List;
     return jsonResponse.map((recipe) => Season.fromJson(recipe).name).toList();
+  }
+
+  Future deleteRecipe(Recipe recipe) async {
+    await BackendService().delete(_toJson(recipe), "api/deleteRecipe.php");
+    await allRecipes(true);
   }
 }

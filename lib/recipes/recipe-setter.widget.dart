@@ -75,6 +75,18 @@ class _RecipeSetterState extends State<RecipeSetter> {
         );
       },
     ));
+    if (widget._recipe.id != null) {
+      children.add(Padding(
+          padding: EdgeInsets.only(top: 100),
+          child: MaterialButton(
+            child: Text("Rezept Löschen"),
+            color: Colors.red,
+            onPressed: () async {
+              await RecipesRepository().deleteRecipe(widget._recipe);
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          )));
+    }
     return Scaffold(
         appBar: AppBar(
           leadingWidth: 150,

@@ -48,4 +48,16 @@ class BackendService {
       throw ServerUnreachableError(e);
     }
   }
+
+  Future delete(dynamic data, String endpoint) async {
+    try {
+      await _getDio().delete(endpoint, data: data);
+      return;
+    } on DioError catch (e) {
+      if (e.response != null) {
+        throw e;
+      }
+      throw ServerUnreachableError(e);
+    }
+  }
 }
