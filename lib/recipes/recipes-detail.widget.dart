@@ -57,9 +57,8 @@ class _RecipesDetailState extends State<RecipesDetail> {
           FlatButton(
             child: Text("Bearbeiten"),
             onPressed: () async {
-              var result = await Navigator.of(context).push(PageRouteBuilder(
-                  transitionDuration: Duration.zero,
-                  pageBuilder: (_, __, ___) =>
+              var result = await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
                       RecipeSetter(_recipe, key: ObjectKey(this))));
               if (result is Recipe) {
                 setState(() => _recipe = result);

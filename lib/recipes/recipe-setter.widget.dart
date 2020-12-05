@@ -22,6 +22,7 @@ class _RecipeSetterState extends State<RecipeSetter> {
 
   final _newTags = <String>[];
   final _nameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +34,19 @@ class _RecipeSetterState extends State<RecipeSetter> {
     children.add(Center(
         child: Padding(
             padding: EdgeInsets.only(top: 15, bottom: 15),
-            child: TextFormField(
-                controller: _nameController,
-                style: theme.textTheme.headline5))));
+            child: Form(
+                key: _formKey,
+                child: TextFormField(
+                    decoration: InputDecoration(labelText: "Name"),
+                    validator: (value) {
+                      if (value == null || value.isEmpty)
+                        return "Bitte einen Namen eingeben";
+                      else
+                        return null;
+                    },
+                    controller: _nameController,
+                    onChanged: (_) => _formKey.currentState.validate(),
+                    style: theme.textTheme.headline5)))));
     children.add(Text("Tags", style: theme.textTheme.headline6));
 
     children.add(ChipsInput(
@@ -75,6 +86,7 @@ class _RecipeSetterState extends State<RecipeSetter> {
             FlatButton(
               child: Text("Fertig"),
               onPressed: () async {
+                if (!_formKey.currentState.validate()) return;
                 widget._recipe.tags = _newTags;
                 widget._recipe.name = _nameController.text;
                 Navigator.of(context).pop(

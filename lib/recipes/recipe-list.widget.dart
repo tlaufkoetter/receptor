@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:receptor/recipes/recipe-item.widget.dart';
+import 'package:receptor/recipes/recipe-setter.widget.dart';
+import 'package:receptor/recipes/recipes-detail.widget.dart';
 
 import 'recipes.model.dart';
 import 'recipes.repository.dart';
@@ -86,6 +88,20 @@ class _RecipesListState extends State<RecipesList> {
         onRefresh: () async {
           var recipes = await RecipesRepository().allRecipes(true);
           setState(() => _recipes = recipes);
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () async {
+          final result = await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) =>
+                  RecipeSetter(Recipe(name: "", tags: [], cookBook: null))));
+          if (result is Recipe) {
+            await Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => RecipesDetail(result)));
+            _recipes = await RecipesRepository().allRecipes(false);
+            setState(() {});
+          }
         },
       ),
     );
