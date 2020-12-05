@@ -14,7 +14,10 @@ class RecipeSetter extends StatefulWidget {
 
 class _RecipeSetterState extends State<RecipeSetter> {
   Future<List<String>> _findSuggestions(String query) async {
-    return query.isNotEmpty ? [query] : [];
+    final tags = await RecipesRepository().getAllTags(false);
+    return tags
+        .where((element) => element.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   final _newTags = <String>[];
@@ -30,8 +33,9 @@ class _RecipeSetterState extends State<RecipeSetter> {
     children.add(Center(
         child: Padding(
             padding: EdgeInsets.only(top: 15, bottom: 15),
-            child:
-                Text(widget._recipe.name, style: theme.textTheme.headline5))));
+            child: TextFormField(
+                controller: _nameController,
+                style: theme.textTheme.headline5))));
     children.add(Text("Tags", style: theme.textTheme.headline6));
 
     children.add(ChipsInput(
@@ -72,6 +76,7 @@ class _RecipeSetterState extends State<RecipeSetter> {
               child: Text("Fertig"),
               onPressed: () async {
                 widget._recipe.tags = _newTags;
+                widget._recipe.name = _nameController.text;
                 Navigator.of(context).pop(
                     await RecipesRepository().updateRecipe(widget._recipe));
               },

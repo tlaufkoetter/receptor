@@ -52,6 +52,33 @@ class RecipesRepository {
     };
     final response =
         await BackendService().post(recipeJson, "api/updateRecipe.php");
+    await allRecipes(true);
+    await getAllTags(true);
     return Recipe.fromJson(jsonDecode(response.data));
+  }
+
+  Future<List<String>> getAllTags(bool forceRefresh) async {
+    var prefs = await _prefs;
+
+    String data;
+    if (!forceRefresh) {
+      if (prefs.containsKey("seasons")) {
+        data = prefs.getString("seasons");
+      }
+    }
+
+    if (data == null) {
+      try {
+        final response = await BackendService().get("api/getAllSeasons.php");
+        data = response.data;
+        final SharedPreferences prefs = await _prefs;
+        prefs.setString("seasons", data);
+      } on ServerUnreachableError catch (e) {
+        if (!prefs.containsKey("seasons")) throw e;
+        data = prefs.getString("seasons");
+      }
+    }
+    final jsonResponse = jsonDecode(data) as List;
+    return jsonResponse.map((recipe) => Season.fromJson(recipe).name).toList();
   }
 }
