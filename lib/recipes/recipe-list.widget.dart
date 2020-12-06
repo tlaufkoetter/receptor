@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:receptor/recipes/recipe-item.widget.dart';
 import 'package:receptor/recipes/recipe-setter.widget.dart';
@@ -71,52 +72,64 @@ class _RecipesListState extends State<RecipesList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Rezepte"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(context: context, delegate: Search(_recipes));
+    return CustomScrollView(
+      slivers: [
+        CupertinoSliverNavigationBar(
+          leading: CupertinoButton(
+              padding: EdgeInsets.zero,
+              child: Text("Suchen"),
+              onPressed: () async =>
+                  showSearch(context: context, delegate: Search(_recipes))),
+          trailing: CupertinoButton(
+            padding: EdgeInsets.zero,
+            child: Text("Hinzufügen"),
+            onPressed: () async {
+              final result =
+                  await Navigator.of(context).push(CupertinoPageRoute(
+                builder: (context) => RecipeSetter(Recipe(tags: [])),
+              ));
+              if (result is Recipe) {
+                _recipes = await RecipesRepository().allRecipes(false);
+                setState(() {});
+              }
             },
-          )
-        ],
-      ),
-      body: RefreshIndicator(
-        child: _buildRecipesList(),
-        onRefresh: () async {
-          var recipes = await RecipesRepository().allRecipes(true);
-          setState(() => _recipes = recipes);
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () async {
-          final result = await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) =>
-                  RecipeSetter(Recipe(name: "", tags: [], cookBook: null))));
-          if (result is Recipe) {
-            await Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => RecipesDetail(result)));
-            _recipes = await RecipesRepository().allRecipes(false);
+          ),
+        ),
+        CupertinoSliverRefreshControl(
+          onRefresh: () async {
+            _recipes = await RecipesRepository().allRecipes(true);
             setState(() {});
-          }
-        },
-      ),
+          },
+        ),
+        SliverSafeArea(
+          top: false,
+          sliver: SliverPadding(
+              padding: EdgeInsets.all(15),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(_listBuilder),
+              )),
+        )
+      ],
     );
   }
 
-  Widget _buildRecipesList() {
-    if (_recipes == null) return LinearProgressIndicator();
-    _recipes.sort((recipe1, recipe2) => recipe1.name.compareTo(recipe2.name));
-    return Scrollbar(
-        child: ListView.separated(
-            physics: BouncingScrollPhysics(),
-            itemCount: _recipes.length,
-            separatorBuilder: (BuildContext context, int i) => Divider(),
-            itemBuilder: (context, i) {
-              return RecipeItem(_recipes[i]);
-            }));
+  BorderRadius _getClip(int index) {
+    if (index == 0) return BorderRadius.vertical(top: Radius.circular(10));
+    if (index == _recipes.length - 1)
+      return BorderRadius.vertical(bottom: Radius.circular(10));
+    return BorderRadius.zero;
+  }
+
+  Widget _listBuilder(BuildContext context, int index) {
+    if (_recipes == null) return Center(child: CupertinoActivityIndicator());
+    if (index ~/ 2 >= _recipes.length) return null;
+    if (index % 2 == 1)
+      return Divider(
+        height: 0,
+      );
+
+    return ClipRRect(
+        borderRadius: _getClip(index ~/ 2),
+        child: RecipeItem(_recipes[index ~/ 2]));
   }
 }

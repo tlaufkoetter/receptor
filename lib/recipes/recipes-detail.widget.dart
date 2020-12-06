@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:receptor/recipes/recipe-setter.widget.dart';
 import 'package:receptor/recipes/recipes.model.dart';
@@ -51,25 +52,38 @@ class _RecipesDetailState extends State<RecipesDetail> {
         style: theme.textTheme.subtitle1,
       ));
     }
-    return Scaffold(
-      appBar: AppBar(),
-      body: Container(
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          child: Text("Bearbeiten"),
+          onPressed: () async {
+            var result = await Navigator.of(context).push(CupertinoPageRoute(
+                builder: (context) =>
+                    RecipeSetter(_recipe, key: ObjectKey(this))));
+            if (result is Recipe) {
+              setState(() => _recipe = result);
+            }
+          },
+        ),
+      ),
+      child: Container(
         child: ListView(
           children: children,
         ),
         padding: EdgeInsets.only(left: 20, right: 20),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.edit),
-        onPressed: () async {
-          var result = await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) =>
-                  RecipeSetter(_recipe, key: ObjectKey(this))));
-          if (result is Recipe) {
-            setState(() => _recipe = result);
-          }
-        },
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   child: Icon(Icons.edit),
+      //   onPressed: () async {
+      //     var result = await Navigator.of(context).push(MaterialPageRoute(
+      //         builder: (context) =>
+      //             RecipeSetter(_recipe, key: ObjectKey(this))));
+      //     if (result is Recipe) {
+      //       setState(() => _recipe = result);
+      //     }
+      //   },
+      // ),
     );
   }
 }

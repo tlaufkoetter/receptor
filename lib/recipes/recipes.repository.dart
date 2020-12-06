@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:receptor/tags/tags.repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './recipes.model.dart';
@@ -32,7 +33,9 @@ class RecipesRepository {
       }
     }
     final jsonResponse = jsonDecode(data) as List;
-    return jsonResponse.map((recipe) => Recipe.fromJson(recipe)).toList();
+    final list = jsonResponse.map((recipe) => Recipe.fromJson(recipe)).toList();
+    list.sort((r, other) => r.name.compareTo(other.name));
+    return list;
   }
 
   Map<String, dynamic> _toJson(Recipe recipe) {
@@ -56,34 +59,9 @@ class RecipesRepository {
     final recipeJson = _toJson(recipe);
     final response =
         await BackendService().post(recipeJson, "api/updateRecipe.php");
-    await getAllTags(true);
+    await TagsRepository().getAllTags(true);
     await allRecipes(true);
     return Recipe.fromJson(jsonDecode(response.data));
-  }
-
-  Future<List<String>> getAllTags(bool forceRefresh) async {
-    var prefs = await _prefs;
-
-    String data;
-    if (!forceRefresh) {
-      if (prefs.containsKey("seasons")) {
-        data = prefs.getString("seasons");
-      }
-    }
-
-    if (data == null) {
-      try {
-        final response = await BackendService().get("api/getAllSeasons.php");
-        data = response.data;
-        final SharedPreferences prefs = await _prefs;
-        prefs.setString("seasons", data);
-      } on ServerUnreachableError catch (e) {
-        if (!prefs.containsKey("seasons")) throw e;
-        data = prefs.getString("seasons");
-      }
-    }
-    final jsonResponse = jsonDecode(data) as List;
-    return jsonResponse.map((recipe) => Season.fromJson(recipe).name).toList();
   }
 
   Future deleteRecipe(Recipe recipe) async {

@@ -1,11 +1,4 @@
-class Season {
-  final int id;
-  final String name;
-  Season({this.id, this.name});
-  factory Season.fromJson(Map<String, dynamic> json) {
-    return Season(id: json['id'], name: json['name']);
-  }
-}
+import 'package:receptor/tags/tag.model.dart';
 
 class CookBook {
   final int id;

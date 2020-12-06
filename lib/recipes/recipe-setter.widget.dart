@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
 import 'package:receptor/recipes/recipes.model.dart';
 import 'package:receptor/recipes/recipes.repository.dart';
+import 'package:receptor/tags/tags.repository.dart';
 
 class RecipeSetter extends StatefulWidget {
   final Recipe _recipe;
@@ -14,7 +16,7 @@ class RecipeSetter extends StatefulWidget {
 
 class _RecipeSetterState extends State<RecipeSetter> {
   Future<List<String>> _findSuggestions(String query) async {
-    final tags = await RecipesRepository().getAllTags(false);
+    final tags = await TagsRepository().getAllTags(false);
     final queryLc = query.toLowerCase();
     final suggestions = <String>[];
     final existing = tags
@@ -84,43 +86,43 @@ class _RecipeSetterState extends State<RecipeSetter> {
         );
       },
     ));
-    final actions = <Widget>[];
     if (widget._recipe.id != null) {
-      actions.add(MaterialButton(
-        textColor: Colors.red,
-        child: Icon(Icons.delete),
-        onPressed: () async {
-          await RecipesRepository().deleteRecipe(widget._recipe);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                  "Rezept gelöscht! Bitte die Rezeptliste aktualisieren.")));
-          Navigator.of(context).popUntil(ModalRoute.withName('/'));
-        },
-      ));
+      children.add(Padding(
+          padding: EdgeInsets.only(top: 20),
+          child: CupertinoButton(
+            color: Colors.red,
+            child: Text("Rezept löschen"),
+            onPressed: () async {
+              await RecipesRepository().deleteRecipe(widget._recipe);
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      "Rezept gelöscht! Bitte die Rezeptliste aktualisieren.")));
+              Navigator.of(context).popUntil(ModalRoute.withName('/'));
+            },
+          )));
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        actions: actions,
-      ),
-      body: Container(
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+          trailing: CupertinoButton(
+              padding: EdgeInsets.zero,
+              child: Text("Fertig"),
+              onPressed: () async {
+                if (!_formKey.currentState.validate()) return;
+                widget._recipe.tags = _newTags;
+                widget._recipe.name = _nameController.text;
+                final result =
+                    await RecipesRepository().updateRecipe(widget._recipe);
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("Rezept " +
+                        (widget._recipe.id == null
+                            ? "erstellt!"
+                            : "aktualisiert!"))));
+                Navigator.of(context).pop(result);
+              })),
+      child: Container(
           child: ListView(children: children),
           padding: EdgeInsets.only(left: 20, right: 20)),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.check),
-        onPressed: () async {
-          if (!_formKey.currentState.validate()) return;
-          widget._recipe.tags = _newTags;
-          widget._recipe.name = _nameController.text;
-          final result = await RecipesRepository().updateRecipe(widget._recipe);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text("Rezept " +
-                  (widget._recipe.id == null
-                      ? "erstellt!"
-                      : "aktualisiert!"))));
-          Navigator.of(context).pop(result);
-        },
-      ),
     );
   }
 }
