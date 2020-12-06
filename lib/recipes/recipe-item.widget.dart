@@ -16,7 +16,6 @@ class RecipeItem extends StatelessWidget {
       }
     }
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 10),
       tileColor: theme.canvasColor,
       title: Text(
         _recipe.name,

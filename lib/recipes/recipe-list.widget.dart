@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:receptor/recipes/recipe-item.widget.dart';
 import 'package:receptor/recipes/recipe-setter.widget.dart';
 import 'package:receptor/recipes/recipes-detail.widget.dart';
+import 'package:receptor/shared/lists/sliver-list-pack.widget.dart';
 
 import 'recipes.model.dart';
 import 'recipes.repository.dart';
@@ -107,31 +108,10 @@ class _RecipesListState extends State<RecipesList> {
           top: false,
           sliver: SliverPadding(
               padding: EdgeInsets.all(15),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(_listBuilder),
-              )),
+              sliver: SliverListPack(
+                  _recipes, (context, data) => RecipeItem(data))),
         )
       ],
     );
-  }
-
-  BorderRadius _getClip(int index) {
-    if (index == 0) return BorderRadius.vertical(top: Radius.circular(10));
-    if (index == _recipes.length - 1)
-      return BorderRadius.vertical(bottom: Radius.circular(10));
-    return BorderRadius.zero;
-  }
-
-  Widget _listBuilder(BuildContext context, int index) {
-    if (_recipes == null) return Center(child: CupertinoActivityIndicator());
-    if (index ~/ 2 >= _recipes.length) return null;
-    if (index % 2 == 1)
-      return Divider(
-        height: 0,
-      );
-
-    return ClipRRect(
-        borderRadius: _getClip(index ~/ 2),
-        child: RecipeItem(_recipes[index ~/ 2]));
   }
 }
