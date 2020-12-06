@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:receptor/recipes/recipe-item.widget.dart';
 import 'package:receptor/recipes/recipe-setter.widget.dart';
+import 'package:receptor/recipes/recipes-detail.widget.dart';
 
 import 'recipes.model.dart';
 import 'recipes.repository.dart';
@@ -90,6 +91,8 @@ class _RecipesListState extends State<RecipesList> {
               if (result is Recipe) {
                 _recipes = await RecipesRepository().allRecipes(false);
                 setState(() {});
+                await Navigator.of(context).push(CupertinoPageRoute(
+                    builder: (context) => RecipesDetail(result)));
               }
             },
           ),
