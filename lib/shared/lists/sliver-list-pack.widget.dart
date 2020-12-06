@@ -20,7 +20,7 @@ class SliverListPack<T> extends StatelessWidget {
       return CupertinoActivityIndicator();
     }
     final listIndex = index ~/ 2;
-    if (listIndex >= _data.length) {
+    if (_data == null || listIndex >= _data.length) {
       return null;
     }
 
