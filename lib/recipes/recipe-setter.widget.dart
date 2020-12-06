@@ -97,7 +97,7 @@ class _RecipeSetterState extends State<RecipeSetter> {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                       "Rezept gelöscht! Bitte die Rezeptliste aktualisieren.")));
-              Navigator.of(context).popUntil(ModalRoute.withName('/'));
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
           )));
     }

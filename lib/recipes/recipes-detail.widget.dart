@@ -73,17 +73,6 @@ class _RecipesDetailState extends State<RecipesDetail> {
         ),
         padding: EdgeInsets.only(left: 20, right: 20),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   child: Icon(Icons.edit),
-      //   onPressed: () async {
-      //     var result = await Navigator.of(context).push(MaterialPageRoute(
-      //         builder: (context) =>
-      //             RecipeSetter(_recipe, key: ObjectKey(this))));
-      //     if (result is Recipe) {
-      //       setState(() => _recipe = result);
-      //     }
-      //   },
-      // ),
     );
   }
 }

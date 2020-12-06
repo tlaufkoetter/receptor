@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:receptor/recipes/recipe-item.widget.dart';
 import 'package:receptor/recipes/recipe-setter.widget.dart';
-import 'package:receptor/recipes/recipes-detail.widget.dart';
 
 import 'recipes.model.dart';
 import 'recipes.repository.dart';
