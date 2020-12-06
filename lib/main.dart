@@ -16,6 +16,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {'/': (context) => RecipesList()},
       title: 'Rezepte',
+      theme: ThemeData(),
+      darkTheme: ThemeData.dark(),
     );
   }
 }
