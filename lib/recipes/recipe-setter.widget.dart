@@ -15,9 +15,18 @@ class RecipeSetter extends StatefulWidget {
 class _RecipeSetterState extends State<RecipeSetter> {
   Future<List<String>> _findSuggestions(String query) async {
     final tags = await RecipesRepository().getAllTags(false);
-    return tags
-        .where((element) => element.toLowerCase().contains(query.toLowerCase()))
+    final queryLc = query.toLowerCase();
+    final suggestions = <String>[];
+    final existing = tags
+        .where((element) => element.toLowerCase().contains(queryLc))
         .toList();
+    if (queryLc.isNotEmpty &&
+        (existing.isEmpty || existing[0].toLowerCase() != queryLc))
+      suggestions.add(query);
+
+    suggestions.addAll(existing);
+
+    return suggestions;
   }
 
   final _newTags = <String>[];
