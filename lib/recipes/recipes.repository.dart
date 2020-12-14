@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:receptor/tags/tags.repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './recipes.model.dart';
 import '../http/backend.service.dart';
 
-class RecipesRepository {
+class RecipesRepository extends ChangeNotifier {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final recipeListApiEnpoint = "api/getAllRecipes.php";
 
@@ -27,6 +28,7 @@ class RecipesRepository {
         data = response.data;
         final SharedPreferences prefs = await _prefs;
         prefs.setString("recipes", data);
+        notifyListeners();
       } on ServerUnreachableError catch (e) {
         if (!prefs.containsKey("recipes")) throw e;
         data = prefs.getString("recipes");

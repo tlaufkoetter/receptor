@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chips_input/flutter_chips_input.dart';
+import 'package:provider/provider.dart';
 import 'package:receptor/recipes/recipes.model.dart';
 import 'package:receptor/recipes/recipes.repository.dart';
 import 'package:receptor/tags/tags.repository.dart';
@@ -93,7 +94,9 @@ class _RecipeSetterState extends State<RecipeSetter> {
             color: Colors.red,
             child: Text("Rezept löschen"),
             onPressed: () async {
-              await RecipesRepository().deleteRecipe(widget._recipe);
+              await context
+                  .read<RecipesRepository>()
+                  .deleteRecipe(widget._recipe);
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(
                       "Rezept gelöscht! Bitte die Rezeptliste aktualisieren.")));
@@ -111,8 +114,9 @@ class _RecipeSetterState extends State<RecipeSetter> {
                 if (!_formKey.currentState.validate()) return;
                 widget._recipe.tags = _newTags;
                 widget._recipe.name = _nameController.text;
-                final result =
-                    await RecipesRepository().updateRecipe(widget._recipe);
+                final result = await context
+                    .read<RecipesRepository>()
+                    .updateRecipe(widget._recipe);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text("Rezept " +
                         (widget._recipe.id == null

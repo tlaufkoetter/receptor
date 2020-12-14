@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:receptor/recipes/recipe-item.widget.dart';
 import 'package:receptor/recipes/recipe-setter.widget.dart';
 import 'package:receptor/recipes/recipes-detail.widget.dart';
@@ -66,13 +67,13 @@ class _RecipesListState extends State<RecipesList> {
   @override
   void initState() {
     super.initState();
-    RecipesRepository()
-        .allRecipes(false)
-        .then((rs) => setState(() => _recipes = rs));
   }
 
   @override
   Widget build(BuildContext context) {
+    final repo = context.watch<RecipesRepository>();
+    repo.allRecipes(false).then((rs) => setState(() => _recipes = rs));
+
     return CustomScrollView(
       slivers: [
         CupertinoSliverNavigationBar(
@@ -90,7 +91,7 @@ class _RecipesListState extends State<RecipesList> {
                 builder: (context) => RecipeSetter(Recipe(tags: [])),
               ));
               if (result is Recipe) {
-                _recipes = await RecipesRepository().allRecipes(false);
+                _recipes = await repo.allRecipes(false);
                 setState(() {});
                 await Navigator.of(context).push(CupertinoPageRoute(
                     builder: (context) => RecipesDetail(result)));
@@ -100,7 +101,7 @@ class _RecipesListState extends State<RecipesList> {
         ),
         CupertinoSliverRefreshControl(
           onRefresh: () async {
-            _recipes = await RecipesRepository().allRecipes(true);
+            _recipes = await repo.allRecipes(true);
             setState(() {});
           },
         ),

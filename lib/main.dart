@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:receptor/recipes/recipes.repository.dart';
 import 'package:receptor/tags/tags-list.widget.dart';
 
 import 'recipes/recipe-list.widget.dart';
@@ -8,7 +10,8 @@ void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
   };
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => RecipesRepository(), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
