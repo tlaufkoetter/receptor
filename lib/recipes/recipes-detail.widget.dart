@@ -37,8 +37,17 @@ class _RecipesDetailState extends State<RecipesDetail> {
     }
     children.add(Divider());
     children.add(Text("Zutaten", style: theme.textTheme.headline6));
-    children
-        .add(Text("keine Zutaten vorhanden", style: theme.textTheme.subtitle1));
+    if (_recipe.ingredients.isEmpty) {
+      children.add(
+          Text("keine Zutaten vorhanden", style: theme.textTheme.subtitle1));
+    } else {
+      for (final ingredient in _recipe.ingredients) {
+        children.add(Text(
+          ingredient.name,
+          style: theme.textTheme.subtitle1,
+        ));
+      }
+    }
     if (_recipe.cookBook != null) {
       children.add(Divider());
       children.add(Text("Quelle", style: theme.textTheme.headline6));

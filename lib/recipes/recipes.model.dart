@@ -11,12 +11,32 @@ class CookBook {
   }
 }
 
+enum QuantityType { none, piece, gramm, milliliter }
+
+class Ingredient {
+  final int id;
+  final String name;
+  final double amount;
+  final QuantityType quantityType;
+  Ingredient({this.id, this.name, this.amount, this.quantityType});
+  factory Ingredient.fromJson(Map<String, dynamic> json) {
+    return Ingredient(
+        id: json['id'],
+        name: json['name'],
+        amount: json['amount'],
+        quantityType: QuantityType.values.firstWhere(
+            (qt) => qt == json['quantity-type'],
+            orElse: () => QuantityType.none));
+  }
+}
+
 class Recipe {
   final int id;
   String name;
   List<String> tags;
+  List<Ingredient> ingredients;
   final CookBook cookBook;
-  Recipe({this.id, this.name, this.tags, this.cookBook});
+  Recipe({this.id, this.name, this.tags, this.cookBook, this.ingredients});
   factory Recipe.fromJson(Map<String, dynamic> json) {
     List<String> seasons = [];
     if (json['seasons'] != null) {
@@ -32,10 +52,19 @@ class Recipe {
         cookBooks.add(frcookbook);
       }
     }
+    List<Ingredient> ingredients = [];
+    if (json['ingredients'] != null) {
+      for (final ingredient in json['ingredients']) {
+        var fringredient = Ingredient.fromJson(ingredient);
+        ingredients.add(fringredient);
+      }
+    }
+
     return Recipe(
         id: json['id'],
         name: json['name'],
         tags: seasons,
-        cookBook: cookBooks.isNotEmpty ? cookBooks.first : null);
+        cookBook: cookBooks.isNotEmpty ? cookBooks.first : null,
+        ingredients: ingredients);
   }
 }
