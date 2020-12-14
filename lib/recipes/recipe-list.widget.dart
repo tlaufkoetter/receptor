@@ -47,10 +47,14 @@ class Search extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     List<Recipe> suggestions = [];
     if (query.isNotEmpty) {
-      suggestions.addAll(_recipes.where((element) =>
-          element.name.toLowerCase().contains(query.toLowerCase()) ||
+      final tokens = query
+          .split(" ")
+          .where((t) => t.isNotEmpty)
+          .map((t) => t.toLowerCase());
+      suggestions.addAll(_recipes.where((element) => tokens.any((t) =>
+          element.name.toLowerCase().contains(t) ||
           element.tags
-              .any((t) => t.toLowerCase().contains(query.toLowerCase()))));
+              .any((t) => tokens.any((to) => t.toLowerCase().contains(to))))));
     }
     return ListView.builder(
       itemCount: suggestions.length,
