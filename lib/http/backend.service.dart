@@ -1,7 +1,5 @@
-import 'dart:io';
 import 'dart:async';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 
 class ServerUnreachableError implements Exception {
@@ -10,17 +8,17 @@ class ServerUnreachableError implements Exception {
 }
 
 class BackendService {
-  final _baseUrl = "https://192.168.178.27:5556/";
+  final _baseUrl = "http://192.168.178.27:5555/";
 
   Dio _getDio() {
     var dio = Dio();
     dio.options.baseUrl = _baseUrl;
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-      return client;
-    };
+    // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    //     (HttpClient client) {
+    //   client.badCertificateCallback =
+    //       (X509Certificate cert, String host, int port) => true;
+    // return client;
+    // };
     return dio;
   }
 
